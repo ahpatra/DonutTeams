@@ -1,0 +1,7 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/cc8c903a-986c-41fc-b2f5-04325745d7bf/resourceGroups/appsvc_rg_linux_centralus/providers/Microsoft.Web/sites/donutTeams",
+    "appService.deploySubpath": ""
+}
