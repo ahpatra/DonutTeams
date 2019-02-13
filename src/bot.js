@@ -11,6 +11,7 @@ module.exports.setup = function(app) {
         delete require.cache[require.resolve('config')];
         config = require('config');
     }
+
     // Create a connector to handle the conversations
     var connector = new teams.TeamsChatConnector({
         // It is a bad idea to store secrets in config files. We try to read the settings from
@@ -26,6 +27,7 @@ module.exports.setup = function(app) {
     var bot = new builder.UniversalBot(connector, function(session) {
         // Message might contain @mentions which we would like to strip off in the response
         var text = teams.TeamsMessage.getTextWithoutMentions(session.message);
+        console.log(text);
         session.send('You said: %s', text);
     }).set('storage', inMemoryBotStorage);
 
@@ -33,6 +35,10 @@ module.exports.setup = function(app) {
     // NOTE: This endpoint cannot be changed and must be api/messages
     app.post('/api/messages', connector.listen());
 
+    bot.on('conversationUpdate', function (message) {
+        console.log(message);   
+        var event = teams.TeamsMessage.getConversationUpdateData(message);   
+    });
     // Export the connector for any downstream integration - e.g. registering a messaging extension
     module.exports.connector = connector;
 };

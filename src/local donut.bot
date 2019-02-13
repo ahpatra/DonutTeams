@@ -1,0 +1,18 @@
+{
+    "name": "local donut bot",
+    "description": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "appId": "5786f949-4443-4fb5-bfca-f616654bb656",
+            "appPassword": "oP-PhY?IA%BU=:t1-]2FRiTA;JQ#jVO*",
+            "endpoint": "https://60a5d69c.ngrok.io/api/messages",
+            "id": "5d7d8e10-2f1c-11e9-be5c-318f12ec27ac",
+            "name": "https://60a5d69c.ngrok.io/api/messages"
+        }
+    ],
+    "padlock": "",
+    "version": "2.0",
+    "overrides": null,
+    "path": "/Users/yahalawa/dev/donutForTeams/DonutTeams/src/local donut.bot"
+}
