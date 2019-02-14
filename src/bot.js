@@ -5,6 +5,7 @@ module.exports.setup = function (app) {
     var teams = require('botbuilder-teams');
     var config = require('config');
     var BOT_ID = "5786f949-4443-4fb5-bfca-f616654bb656@cGoLJ7dU20g";
+    var memberIdList = [];
 
     if (!config.has("bot.appId")) {
         // We are running locally; fix up the location of the config directory and re-intialize config
@@ -32,7 +33,6 @@ module.exports.setup = function (app) {
         session.send('You said: %s', text);
 
         //Fetching members - 
-        var memberIdList = [];
         var conversationId = session.message.address.conversation.id;
         connector.fetchMembers(session.message.address.serviceUrl,
             conversationId,
@@ -42,34 +42,21 @@ module.exports.setup = function (app) {
                 }
                 else {
                     for (var i = 0; i < result.length; i++) {
-                        memberIdList.push(result[i].id);
+                        memberIdList.push(result[i]);
                     }
                     console.log("Member id list from teams " + memberIdList);
-
-                    // randomize member ids
-                    var j, temp, i;
-                    for (i = memberIdList.length - 1; i > 0; i--) {
-                        j = Math.floor(Math.random() * (i + 1));
-                        temp = memberIdList[i];
-                        memberIdList[i] = memberIdList[j];
-                        memberIdList[j] = temp;
-                    }
-                    console.log("Randomized id list " + memberIdList);
-
-                    //split into lists of 2 
-                    var splitMemberIdList = [];
-
-                    for (var i = 0; i < memberIdList.length; i += 2) {
-                        splitMemberIdList.push(memberIdList.slice(i, i + 2));
-                    }
-
-                    console.log("Split list Before concat " + splitMemberIdList)
-
-                    //if there are odd number of members, last list has 3 ppl
-                    if (memberIdList.length % 2 == 1) {
-                        splitMemberIdList[splitMemberIdList.length - 2].push(splitMemberIdList[splitMemberIdList.length - 1][0]);
-                        splitMemberIdList.pop()
-                        console.log("Split list After concat " + splitMemberIdList);
+                    var splitList = spitMembers();
+                    for(var i = 0; i < splitList.length; i++) {
+                        var chatMembers = splitList[i];
+                        var membersPayLoad;
+                        for(var j = 0; j < chatMembers.length; j++) {
+                            var memberPayLoad = {
+                                id: chatMembers[j].id,
+                                name: chatMembers[i].name
+                            }
+                            membersPayLoad.push(memberPayLoad)
+                            //TODO: Call group chats method here
+                        }
                     }
                 }
             }
@@ -83,10 +70,12 @@ module.exports.setup = function (app) {
 
     bot.on('conversationUpdate', function (message) {
         console.log(message);
-        // var event = teams.TeamsMessage.getConversationUpdateData(message); 
-
-        //Check if the member added is the BOT  
+        // var event = teams.TeamsMessage.getConversationUpdateData(message);         //Check if the member added is the BOT  
         var members = message.membersAdded;
+        memberIdList.push(members)
+
+        var deletedMembers = message.membersRemoved;
+
 
         // Loop through all members that were just added to the team
         for (var i = 0; i < members.length; i++) {
@@ -99,7 +88,46 @@ module.exports.setup = function (app) {
                 bot.send(botmessage, function (err) { });
             }
         }
+
+        for (var i = 0; i < deletedMembers.length; i++) {
+            if (memberIdList[i].id === deletedMembers[i].id) {
+                memberIdList.splice(i,1)
+            }
+            // See if the member deletd was our bot
+            if (members[i].id.includes(BOT_ID)) {
+                //TODO: Clear the timer if the bot is removed.
+            }
+        }
     });
+
+    function spitMembers() {
+        // randomize member ids
+        var j, temp, i;
+        for (i = memberIdList.length - 1; i > 0; i--) {
+            j = Math.floor(Math.random() * (i + 1));
+            temp = memberIdList[i];
+            memberIdList[i] = memberIdList[j];
+            memberIdList[j] = temp;
+        }
+        console.log("Randomized id list " + memberIdList);
+
+        //split into lists of 2 
+        var splitMemberIdList = [];
+
+        for (var i = 0; i < memberIdList.length; i += 2) {
+            splitMemberIdList.push(memberIdList.slice(i, i + 2));
+        }
+
+        console.log("Split list Before concat " + splitMemberIdList)
+
+        //if there are odd number of members, last list has 3 ppl
+        if (memberIdList.length % 2 == 1) {
+            splitMemberIdList[splitMemberIdList.length - 2].push(splitMemberIdList[splitMemberIdList.length - 1][0]);
+            splitMemberIdList.pop()
+            console.log("Split list After concat " + splitMemberIdList);
+        }
+        return splitMemberIdList
+    }
 
     // Export the connector for any downstream integration - e.g. registering a messaging extension
     module.exports.connector = connector;
