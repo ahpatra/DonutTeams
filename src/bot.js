@@ -6,6 +6,7 @@ module.exports.setup = function (app) {
     var config = require('config');
     var BOT_ID = "";
     var memberIdList = [];
+    var membersPayLoad =[];
     var scheduleFollowUpTimer = true;
     var address;
 
@@ -47,19 +48,6 @@ module.exports.setup = function (app) {
                         memberIdList.push(result[i]);
                     }
                     console.log("Member id list from teams " + memberIdList);
-                    var splitList = spitMembers();
-                    for (var i = 0; i < splitList.length; i++) {
-                        var chatMembers = splitList[i];
-                        var membersPayLoad =[];
-                        for (var j = 0; j < chatMembers.length; j++) {
-                            var memberPayLoad = {
-                                id: chatMembers[j].id,
-                                name: chatMembers[j].name
-                            }
-                            membersPayLoad.push(memberPayLoad)
-                            //TODO: Call group chats method here
-                        }
-                    }
                 }
             }
         );
@@ -111,8 +99,23 @@ module.exports.setup = function (app) {
         }
     });
 
+    function createChatMembersPayload() {
+        var splitList = spitMembers();
+        for (var i = 0; i < splitList.length; i++) {
+            var chatMembers = splitList[i];
+            for (var j = 0; j < chatMembers.length; j++) {
+                var memberPayLoad = {
+                    id: chatMembers[j].id,
+                    name: chatMembers[j].name
+                }
+                membersPayLoad.push(memberPayLoad)
+            }
+        }
+    }
 
     function startGroupChatScheduleFunc() {
+        createChatMembersPayload()
+        createGroupChats(membersPayLoad)
         var botmessage = new builder.Message()
             .address(address)
             .text('Hello, You are scheduled for a Donut');
@@ -125,10 +128,35 @@ module.exports.setup = function (app) {
     }
 
     function startFollowUpChatScheduleFunc() {
+        createGroupChats(membersPayLoad)
         var botmessage = new builder.Message()
             .address(address)
             .text('Hello, this is a reminder for your Donut');
         bot.send(botmessage, function (err) { });
+    }
+
+    function createGroupChats(chatMembers) {
+        for (var i = 0; i < chatMembers.length; i++) {
+            var address =
+            {
+                channelId: 'msteams',
+                user: { id: chatMembers[i].id },
+                channelData: {
+                    tenant: {
+                        id: '72f988bf-86f1-41af-91ab-2d7cd011db47'
+                    }
+                },
+                bot:
+                {
+                    id: config.get("bot.appId"),
+                    name: config.get("bot.appName")
+                },
+                serviceUrl: session.message.address.serviceUrl,
+                useAuth: true
+            }
+
+            bot.beginDialog(address, '/');
+         }
     }
 
     function spitMembers() {
