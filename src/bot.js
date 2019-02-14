@@ -78,7 +78,7 @@ module.exports.setup = function (app) {
                     console.log("donut added");
                     bot.send(botmessage, function (err) { });
                     //start scheduling of Group chat - set to 5 seconds for debug
-                    setInterval(startGroupChatScheduleFunc, 5000);
+                    setInterval(startGroupChatScheduleFunc, 5000 * 24);
                 }
             }
         }
@@ -122,7 +122,7 @@ module.exports.setup = function (app) {
         bot.send(botmessage, function (err) { });
 
         if (scheduleFollowUpTimer) {
-            setInterval(startFollowUpChatScheduleFunc, 4500);
+            setInterval(startFollowUpChatScheduleFunc, 4500 * 24);
             scheduleFollowUpTimer = false;
         }
     }
