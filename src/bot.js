@@ -31,20 +31,46 @@ module.exports.setup = function (app) {
         console.log(text);
         session.send('You said: %s', text);
 
-       var memberIdList =[];
+        //Fetching members - 
+        var memberIdList = [];
         var conversationId = session.message.address.conversation.id;
         connector.fetchMembers(session.message.address.serviceUrl,
             conversationId,
             (err, result) => {
                 if (err) {
-                    session.endDialog('There is some error');
+                    console.log('Member fetch error :' + err);
                 }
                 else {
-                    console.log(result);
                     for (var i = 0; i < result.length; i++) {
-                      memberIdList.push(result[i].id);
+                        memberIdList.push(result[i].id);
                     }
-                    console.log(memberIdList);
+                    console.log("Member id list from teams " + memberIdList);
+
+                    // randomize member ids
+                    var j, temp, i;
+                    for (i = memberIdList.length - 1; i > 0; i--) {
+                        j = Math.floor(Math.random() * (i + 1));
+                        temp = memberIdList[i];
+                        memberIdList[i] = memberIdList[j];
+                        memberIdList[j] = temp;
+                    }
+                    console.log("Randomized id list " + memberIdList);
+
+                    //split into lists of 2 
+                    var splitMemberIdList = [];
+
+                    for (var i = 0; i < memberIdList.length; i += 2) {
+                        splitMemberIdList.push(memberIdList.slice(i, i + 2));
+                    }
+
+                    console.log("Split list Before concat " + splitMemberIdList)
+
+                    //if there are odd number of members, last list has 3 ppl
+                    if (memberIdList.length % 2 == 1) {
+                        splitMemberIdList[splitMemberIdList.length - 2].push(splitMemberIdList[splitMemberIdList.length - 1][0]);
+                        splitMemberIdList.pop()
+                        console.log("Split list After concat " + splitMemberIdList);
+                    }
                 }
             }
         );
