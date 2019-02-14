@@ -4,8 +4,10 @@ module.exports.setup = function (app) {
     var builder = require('botbuilder');
     var teams = require('botbuilder-teams');
     var config = require('config');
-    var BOT_ID = "5786f949-4443-4fb5-bfca-f616654bb656@cGoLJ7dU20g";
+    var BOT_ID = "";
     var memberIdList = [];
+    var scheduleFollowUpTimer = true;
+    var address;
 
     if (!config.has("bot.appId")) {
         // We are running locally; fix up the location of the config directory and re-intialize config
@@ -13,7 +15,7 @@ module.exports.setup = function (app) {
         delete require.cache[require.resolve('config')];
         config = require('config');
     }
-
+    BOT_ID = config.get("bot.appId");
     // Create a connector to handle the conversations
     var connector = new teams.TeamsChatConnector({
         // It is a bad idea to store secrets in config files. We try to read the settings from
@@ -46,13 +48,13 @@ module.exports.setup = function (app) {
                     }
                     console.log("Member id list from teams " + memberIdList);
                     var splitList = spitMembers();
-                    for(var i = 0; i < splitList.length; i++) {
+                    for (var i = 0; i < splitList.length; i++) {
                         var chatMembers = splitList[i];
-                        var membersPayLoad;
-                        for(var j = 0; j < chatMembers.length; j++) {
+                        var membersPayLoad =[];
+                        for (var j = 0; j < chatMembers.length; j++) {
                             var memberPayLoad = {
                                 id: chatMembers[j].id,
-                                name: chatMembers[i].name
+                                name: chatMembers[j].name
                             }
                             membersPayLoad.push(memberPayLoad)
                             //TODO: Call group chats method here
@@ -72,33 +74,62 @@ module.exports.setup = function (app) {
         console.log(message);
         // var event = teams.TeamsMessage.getConversationUpdateData(message);         //Check if the member added is the BOT  
         var members = message.membersAdded;
-        memberIdList.push(members)
 
         var deletedMembers = message.membersRemoved;
 
-
-        // Loop through all members that were just added to the team
-        for (var i = 0; i < members.length; i++) {
-            // See if the member added was our bot
-            if (members[i].id.includes(BOT_ID)) {
-                var botmessage = new builder.Message()
-                    .address(message.address)
-                    .text('Hello, Donut Bot was added to your Team');
-
-                bot.send(botmessage, function (err) { });
+        if (typeof members != "undefined") {
+            memberIdList.push(members)
+            // Loop through all members that were just added to the team
+            for (var i = 0; i < members.length; i++) {
+                // See if the member added was our bot
+                if (members[i].id.includes(BOT_ID)) {
+                    address = message.address;
+                    var botmessage = new builder.Message()
+                        .address(message.address)
+                        .text('Hello, Donut Bot was added to your Team');
+                    console.log("donut added");
+                    bot.send(botmessage, function (err) { });
+                    //start scheduling of Group chat - set to 5 seconds for debug
+                    setInterval(startGroupChatScheduleFunc, 5000);
+                }
             }
         }
+        if (typeof deletedMembers != "undefined") {
 
-        for (var i = 0; i < deletedMembers.length; i++) {
-            if (memberIdList[i].id === deletedMembers[i].id) {
-                memberIdList.splice(i,1)
-            }
-            // See if the member deletd was our bot
-            if (members[i].id.includes(BOT_ID)) {
-                //TODO: Clear the timer if the bot is removed.
+            for (var i = 0; i < deletedMembers.length; i++) {
+                if (memberIdList[i].id === deletedMembers[i].id) {
+                    memberIdList.splice(i, 1)
+                }
+                // See if the member deleted was our bot
+                if (deletedMembers[i].id.includes(BOT_ID)) {
+                    //TODO: Clear the timer if the bot is removed.
+                    console.log("Donut deleted");
+                    clearInterval(this);
+                    clearInterval(this);
+                }
             }
         }
     });
+
+
+    function startGroupChatScheduleFunc() {
+        var botmessage = new builder.Message()
+            .address(address)
+            .text('Hello, You are scheduled for a Donut');
+        bot.send(botmessage, function (err) { });
+
+        if (scheduleFollowUpTimer) {
+            setInterval(startFollowUpChatScheduleFunc, 4500);
+            scheduleFollowUpTimer = false;
+        }
+    }
+
+    function startFollowUpChatScheduleFunc() {
+        var botmessage = new builder.Message()
+            .address(address)
+            .text('Hello, this is a reminder for your Donut');
+        bot.send(botmessage, function (err) { });
+    }
 
     function spitMembers() {
         // randomize member ids
