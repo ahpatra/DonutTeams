@@ -9,6 +9,7 @@ module.exports.setup = function (app) {
     var membersPayLoad =[];
     var scheduleFollowUpTimer = true;
     var address;
+    var isPersonalChat = false;
 
     if (!config.has("bot.appId")) {
         // We are running locally; fix up the location of the config directory and re-intialize config
@@ -33,25 +34,39 @@ module.exports.setup = function (app) {
         // Message might contain @mentions which we would like to strip off in the response
         var text = teams.TeamsMessage.getTextWithoutMentions(session.message);
         console.log(text);
-        session.send('You said: %s', text);
+        if (isPersonalChat){
+            var card = require("./views/greetingCard.json");
+            var botmessage = new builder.Message(session)
+                .address(address)
+                .addAttachment({
+                    "contentType": "application/vnd.microsoft.card.adaptive",
+                    "content": card
+                });
+                
+            bot.send(botmessage, function (err) { });
+            isPersonalChat = false;
+        }
 
         //Fetching members - 
-        var conversationId = session.message.address.conversation.id;
-        connector.fetchMembers(session.message.address.serviceUrl,
-            conversationId,
-            (err, result) => {
-                if (err) {
-                    console.log('Member fetch error :' + err);
-                }
-                else {
-                    for (var i = 0; i < result.length; i++) {
-                        memberIdList.push(result[i]);
+        if (membersPayLoad.length == 0){
+            var conversationId = session.message.address.conversation.id;
+            connector.fetchMembers(session.message.address.serviceUrl,
+                conversationId,
+                (err, result) => {
+                    if (err) {
+                        console.log('Member fetch error :' + err);
                     }
-                    console.log("Member id list from teams " + memberIdList);
+                    else {
+                        for (var i = 0; i < result.length; i++) {
+                            memberIdList.push(result[i]);
+                        }
+                        startGroupChatScheduleFunc(session);
+                        console.log("Member id list from teams " + memberIdList);
+                        //session.endDialog();
+                    }
                 }
-            }
-        );
-
+            );
+        } 
     }).set('storage', inMemoryBotStorage);
 
     // Setup an endpoint on the router for the bot to listen.
@@ -78,7 +93,7 @@ module.exports.setup = function (app) {
                     console.log("donut added");
                     bot.send(botmessage, function (err) { });
                     //start scheduling of Group chat - set to 5 seconds for debug
-                    setInterval(startGroupChatScheduleFunc, 5000 * 24);
+                    //setInterval(startGroupChatScheduleFunc, 5000 * 24);
                 }
             }
         }
@@ -113,18 +128,23 @@ module.exports.setup = function (app) {
         }
     }
 
-    function startGroupChatScheduleFunc() {
+    function startGroupChatScheduleFunc(session) {
         createChatMembersPayload()
-        createGroupChats(membersPayLoad)
-        var botmessage = new builder.Message()
+        createGroupChats(session, membersPayLoad)
+        var card = require("./views/greetingCard.json");
+        var botmessage = new builder.Message(session)
             .address(address)
-            .text('Hello, You are scheduled for a Donut');
+            .addAttachment({
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": card
+            });
+            
         bot.send(botmessage, function (err) { });
 
-        if (scheduleFollowUpTimer) {
-            setInterval(startFollowUpChatScheduleFunc, 4500 * 24);
-            scheduleFollowUpTimer = false;
-        }
+        // if (scheduleFollowUpTimer) {
+        //     setInterval(startFollowUpChatScheduleFunc, 4500 * 24);
+        //     scheduleFollowUpTimer = false;
+        // }
     }
 
     function startFollowUpChatScheduleFunc() {
@@ -135,7 +155,7 @@ module.exports.setup = function (app) {
         bot.send(botmessage, function (err) { });
     }
 
-    function createGroupChats(chatMembers) {
+    function createGroupChats(session, chatMembers) {
         for (var i = 0; i < chatMembers.length; i++) {
             var address =
             {
@@ -154,8 +174,8 @@ module.exports.setup = function (app) {
                 serviceUrl: session.message.address.serviceUrl,
                 useAuth: true
             }
-
-            bot.beginDialog(address, '/');
+            isPersonalChat = true;
+            bot.beginDialog(address, '/')
          }
     }
 
