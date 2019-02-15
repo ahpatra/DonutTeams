@@ -35,7 +35,7 @@
           }, 
           {
             "type": "TextBlock",
-            "text": "\n\n - **In-N-Out Burger** at 333 Jefferson St. 🍔 \r- **Cliff House** at 1090 Point Lobos 🍤 \r- **International Smoke** at 301 Mission Street 🌍",
+            "text": "\r-  **In-N-Out Burger** at 333 Jefferson St. 🍔 \r- **Cliff House** at 1090 Point Lobos 🍤 \r- **International Smoke** at 301 Mission Street 🌍",
             "wrap": true
           }               
         ]
