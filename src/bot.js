@@ -9,7 +9,7 @@ module.exports.setup = function (app) {
     var membersPayLoad =[];
     var scheduleFollowUpTimer = true;
     var address;
-    var isPersonalChat = false;
+    var CHAT_MEMBER = undefined;
 
     if (!config.has("bot.appId")) {
         // We are running locally; fix up the location of the config directory and re-intialize config
@@ -32,20 +32,8 @@ module.exports.setup = function (app) {
     // Define a simple bot with the above connector that echoes what it received
     var bot = new builder.UniversalBot(connector, function (session) {
         // Message might contain @mentions which we would like to strip off in the response
-        var text = teams.TeamsMessage.getTextWithoutMentions(session.message);
-        console.log(text);
-        if (isPersonalChat){
-            var card = require("./views/greetingCard.json");
-            var botmessage = new builder.Message(session)
-                .address(address)
-                .addAttachment({
-                    "contentType": "application/vnd.microsoft.card.adaptive",
-                    "content": card
-                });
-                
-            bot.send(botmessage, function (err) { });
-            isPersonalChat = false;
-        }
+        // var text = teams.TeamsMessage.getTextWithoutMentions(session.message);
+        // console.log(text);
 
         //Fetching members - 
         if (membersPayLoad.length == 0){
@@ -66,7 +54,9 @@ module.exports.setup = function (app) {
                     }
                 }
             );
-        } 
+        }
+        
+        session.beginDialog('sendGreeting');
     }).set('storage', inMemoryBotStorage);
 
     // Setup an endpoint on the router for the bot to listen.
@@ -131,15 +121,7 @@ module.exports.setup = function (app) {
     function startGroupChatScheduleFunc(session) {
         createChatMembersPayload()
         createGroupChats(session, membersPayLoad)
-        var card = require("./views/greetingCard.json");
-        var botmessage = new builder.Message(session)
-            .address(address)
-            .addAttachment({
-                "contentType": "application/vnd.microsoft.card.adaptive",
-                "content": card
-            });
-            
-        bot.send(botmessage, function (err) { });
+        
 
         // if (scheduleFollowUpTimer) {
         //     setInterval(startFollowUpChatScheduleFunc, 4500 * 24);
@@ -155,12 +137,11 @@ module.exports.setup = function (app) {
         bot.send(botmessage, function (err) { });
     }
 
-    function createGroupChats(session, chatMembers) {
-        for (var i = 0; i < chatMembers.length; i++) {
+    bot.dialog('startChat', function(session) {
             var address =
             {
                 channelId: 'msteams',
-                user: { id: chatMembers[i].id },
+                user: { id: CHAT_MEMBER.id },
                 channelData: {
                     tenant: {
                         id: '72f988bf-86f1-41af-91ab-2d7cd011db47'
@@ -174,8 +155,28 @@ module.exports.setup = function (app) {
                 serviceUrl: session.message.address.serviceUrl,
                 useAuth: true
             }
-            isPersonalChat = true;
-            bot.beginDialog(address, '/')
+            bot.beginDialog(address, 'sendGreeting');
+            //bot.beginDialog(address, '/');
+        });
+
+    bot.dialog('sendGreeting', function(session){
+        var card = require("./views/greetingCard.json");
+        var botmessage = new builder.Message(session)
+            .address(session.message.address)
+            .addAttachment({
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": card
+            });
+            
+        // session.send(botmessage);
+        bot.send(botmessage, function (err) { });
+        //session.endDialog();
+    });
+
+    function createGroupChats(session, chatMembers) {
+        for (var i = 0; i < chatMembers.length; i++) {
+            CHAT_MEMBER = chatMembers[i];
+            session.beginDialog('startChat', session)
          }
     }
 
