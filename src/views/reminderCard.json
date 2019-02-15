@@ -60,25 +60,10 @@
             }          
           ]
         }
-      },     
+      },
       {
         "type": "Action.ShowCard",
-        "title": "No (at 1 week)",
-        "card": {
-          "type": "AdaptiveCard",
-          "body": [
-            {
-              "type": "TextBlock",
-              "text": "But don't worry, be happy, there's still time...",
-              "wrap": true,
-              "size": "medium"
-            }          
-          ]
-        }
-      },  
-      {
-        "type": "Action.ShowCard",
-        "title": "No (at 2 weeks)",
+        "title": "No",
         "card": {
           "type": "AdaptiveCard",
           "body": [

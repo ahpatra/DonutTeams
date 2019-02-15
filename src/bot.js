@@ -187,11 +187,13 @@ module.exports.setup = function (app) {
                 "content": card
             });
             
-        bot.send(botmessage, function (err) { });
-        session.beginDialog('sendReminderCard');
+        bot.send(botmessage, function (err) { 
+            session.beginDialog('sendReminderCard', chatMember);
+        });
+        
     });
 
-    bot.dialog('sendReminderCard', function(session){
+    bot.dialog('sendReminderCard', function(session, chatMember){
         var card = require("./views/reminderCard.json");
         var botmessage = new builder.Message(session)
             .address(session.message.address)
@@ -199,6 +201,7 @@ module.exports.setup = function (app) {
                 "contentType": "application/vnd.microsoft.card.adaptive",
                 "content": card
             });
+        
             
         bot.send(botmessage, function (err) { });
     });
