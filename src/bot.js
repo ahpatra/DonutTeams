@@ -10,6 +10,7 @@ module.exports.setup = function (app) {
     var scheduleFollowUpTimer = true;
     var address;
     var CHAT_MEMBER = undefined;
+    var PAIRINGS = {};
 
     if (!config.has("bot.appId")) {
         // We are running locally; fix up the location of the config directory and re-intialize config
@@ -104,6 +105,15 @@ module.exports.setup = function (app) {
         }
     });
 
+    function insertOrAdd(member, list, i){
+        var newArr = [];
+        for (var x = 0; x < list.length; x++){
+            newArr.push(list[x].name);
+        }
+        newArr.splice(i, 1);
+        PAIRINGS[member.name] = newArr;
+    }
+
     function createChatMembersPayload() {
         var splitList = spitMembers();
         for (var i = 0; i < splitList.length; i++) {
@@ -114,6 +124,7 @@ module.exports.setup = function (app) {
                     name: chatMembers[j].name
                 }
                 membersPayLoad.push(memberPayLoad)
+                insertOrAdd(chatMembers[j], chatMembers, j);
             }
         }
     }
@@ -155,6 +166,7 @@ module.exports.setup = function (app) {
                 serviceUrl: session.message.address.serviceUrl,
                 useAuth: true
             }
+            var x = PAIRINGS;
             bot.beginDialog(address, 'sendGreeting');
             //bot.beginDialog(address, '/');
         });
