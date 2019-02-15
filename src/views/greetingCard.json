@@ -1,53 +1,62 @@
 {
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
     "type": "AdaptiveCard",
-    "version":"1.0",
+    "version": "1.0",
     "body": [
-    {
+      {
         "type": "Container",
         "items": [
-        {
+          {
             "type": "TextBlock",
             "text": "New Donut Match!",
             "weight": "bolder",
             "size": "large"
-        }
+          }
         ]
-    },
-    {
+      },
+      {
         "type": "Container",
         "items": [
-        {
+          {
             "type": "TextBlock",
             "text": "👋 Allison Brown, Franziska Fiegler \r\r 🌞 Hello! 🌞",
             "wrap": true
-        },
-        {
+          },
+          {
             "type": "TextBlock",
             "text": "I'm your friendly 🍩🤖, here to help you get to know your teammates better by pairing everyone enrolled in Donuteers every 2 weeks.",
             "wrap": true
-        },
-        {
+          },
+          {
             "type": "TextBlock",
             "text": "Now that you're here, why don't you pick a time to meet for ☕, 🍔, or 🍩? (Or via 💻 if you're in different locations!)",
             "wrap": true
-        },
-        {
+          },
+          {
             "type": "TextBlock",
             "text": "**🔥 Suggested Donut Hot Spots 🔥**",
             "wrap": true,
             "size": "large"
-        }, 
-        {
+          }, 
+          {
             "type": "TextBlock",
             "text": "\n\n - **In-N-Out Burger** at 333 Jefferson St. 🍔 \r- **Cliff House** at 1090 Point Lobos 🍤 \r- **International Smoke** at 301 Mission Street 🌍",
             "wrap": true
-        },               
-        {
+          },               
+          {
             "type": "TextBlock",
             "text": "_Will you be out of office? Just open up a DM with me and say “help” to snooze pairings. Want to stop participating in pairings? Just leave Donuteers._",
             "wrap": true
-        }                
+          }                
         ]
-    }
-]
+      }
+      
+    ],
+    "actions": [
+        {
+            "type": "Action.OpenUrl",
+            "url": "https://teams.microsoft.com/l/chat/0/0?users=magovin@microsoft.com,yahalawa@microsoft.com&topicName=Get%20Coffee!&message=Lets%20meet!",
+            "title": "Chat with Maha and Yazan"
+        }
+    ]
 }
