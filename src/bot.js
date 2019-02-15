@@ -55,9 +55,7 @@ module.exports.setup = function (app) {
                     }
                 }
             );
-        }
-        
-        session.beginDialog('sendGreeting');
+        }        
     }).set('storage', inMemoryBotStorage);
 
     // Setup an endpoint on the router for the bot to listen.
@@ -121,7 +119,8 @@ module.exports.setup = function (app) {
             for (var j = 0; j < chatMembers.length; j++) {
                 var memberPayLoad = {
                     id: chatMembers[j].id,
-                    name: chatMembers[j].name
+                    name: chatMembers[j].name,
+                    email: chatMembers[j].email
                 }
                 membersPayLoad.push(memberPayLoad)
                 insertOrAdd(chatMembers[j], chatMembers, j);
@@ -168,20 +167,22 @@ module.exports.setup = function (app) {
             }
             var x = PAIRINGS;
             bot.beginDialog(address, 'sendGreeting');
-            //bot.beginDialog(address, '/');
         });
 
     bot.dialog('sendGreeting', function(session){
         var card = require("./views/greetingCard.json");
-        var pairingName;
-        var pairingEmail;
-        for (i = 0; i < PAIRINGS[CHAT_MEMBER.name].length; i++) {
-            pairingName += PAIRINGS[CHAT_MEMBER.name][i].name + " "
-            pairingEmail += PAIRINGS[CHAT_MEMBER.name][i].email + ","
+        var pairingNames = '';
+        var pairingEmails = CHAT_MEMBER.email;
+        for (var i = 0; i < PAIRINGS[CHAT_MEMBER.name].length; i++) {
+            pairingNames += PAIRINGS[CHAT_MEMBER.name][i].name
+            if (i != PAIRINGS[CHAT_MEMBER.name].length -1){
+                pairingNames += " and "
+            }
+            pairingEmails += ',' + PAIRINGS[CHAT_MEMBER.name][i].email
         }
-        var titleText = "Chat with" +  CHAT_MEMBER.name + pairingName
+        var titleText = "Chat with " + pairingNames
         card.actions[0].title = titleText;
-        card.actions[0].url = "https://teams.microsoft.com/l/chat/0/0?users="+ pairingEmail+"&topicName=Get%20Coffee!&message=Lets%20meet!";
+        card.actions[0].url = "https://teams.microsoft.com/l/chat/0/0?users="+ pairingEmails+"&topicName=Get%20Coffee!&message=Lets%20meet!";
         var botmessage = new builder.Message(session)
             .address(session.message.address)
             .addAttachment({
@@ -189,9 +190,7 @@ module.exports.setup = function (app) {
                 "content": card
             });
             
-        // session.send(botmessage);
         bot.send(botmessage, function (err) { });
-        //session.endDialog();
     });
 
     function createGroupChats(session, chatMembers) {
