@@ -37,25 +37,22 @@ module.exports.setup = function (app) {
         // console.log(text);
 
         //Fetching members - 
-        if (membersPayLoad.length == 0){
-            var conversationId = session.message.address.conversation.id;
-            connector.fetchMembers(session.message.address.serviceUrl,
-                conversationId,
-                (err, result) => {
-                    if (err) {
-                        console.log('Member fetch error :' + err);
-                    }
-                    else {
-                        for (var i = 0; i < result.length; i++) {
-                            memberIdList.push(result[i]);
-                        }
-                        startGroupChatScheduleFunc(session);
-                        console.log("Member id list from teams " + memberIdList);
-                        //session.endDialog();
-                    }
+        var conversationId = session.message.address.conversation.id;
+        connector.fetchMembers(session.message.address.serviceUrl,
+            conversationId,
+            (err, result) => {
+                if (err) {
+                    console.log('Member fetch error :' + err);
                 }
-            );
-        }        
+                else {
+                    for (var i = 0; i < result.length; i++) {
+                        memberIdList.push(result[i]);
+                    }
+                    startGroupChatScheduleFunc(session);
+                    console.log("Member id list from teams " + memberIdList);
+                }
+            }
+        );
     }).set('storage', inMemoryBotStorage);
 
     // Setup an endpoint on the router for the bot to listen.
@@ -165,20 +162,20 @@ module.exports.setup = function (app) {
                 serviceUrl: session.message.address.serviceUrl,
                 useAuth: true
             }
-            var x = PAIRINGS;
-            bot.beginDialog(address, 'sendGreeting');
+            bot.beginDialog(address, 'sendGreeting', CHAT_MEMBER);
         });
 
-    bot.dialog('sendGreeting', function(session){
+    bot.dialog('sendGreeting', function(session, chatMember){
         var card = require("./views/greetingCard.json");
         var pairingNames = '';
-        var pairingEmails = CHAT_MEMBER.email;
-        for (var i = 0; i < PAIRINGS[CHAT_MEMBER.name].length; i++) {
-            pairingNames += PAIRINGS[CHAT_MEMBER.name][i].name
-            if (i != PAIRINGS[CHAT_MEMBER.name].length -1){
+        var pairingEmails = chatMember.email;
+        for (var i = 0; i < PAIRINGS[chatMember.name].length; i++) {
+            var firstName = (PAIRINGS[chatMember.name][i].name).replace(/ .*/,'');
+            pairingNames += firstName
+            if (i != PAIRINGS[chatMember.name].length -1){
                 pairingNames += " and "
             }
-            pairingEmails += ',' + PAIRINGS[CHAT_MEMBER.name][i].email
+            pairingEmails += ',' + PAIRINGS[chatMember.name][i].email
         }
         var titleText = "Chat with " + pairingNames
         card.actions[0].title = titleText;
