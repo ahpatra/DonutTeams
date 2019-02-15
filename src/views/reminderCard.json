@@ -39,12 +39,6 @@
           "body": [
             {
               "type": "TextBlock",
-              "text": "**Allison Brown said that you met.**",
-              "wrap": true,
-              "size": "large"
-            },
-            {
-              "type": "TextBlock",
               "text": "That's great that you met! 🎉🍩🎉 I literally cannot wait to group you with new team members soon!",
               "wrap": true,
               "size": "medium"
@@ -58,12 +52,6 @@
         "card": {
           "type": "AdaptiveCard",
           "body": [
-            {
-              "type": "TextBlock",
-              "text": "**Franziska Fiegler said that your meeting is scheduled.**",
-              "wrap": true,
-              "size": "large"
-            },
             {
               "type": "TextBlock",
               "text": "That's great that you're going to meet! ⌛🍩⏳ I literally cannot wait to group you with new team members soon!",
@@ -81,12 +69,6 @@
           "body": [
             {
               "type": "TextBlock",
-              "text": "**Allison Brown said that you didn't meet.**",
-              "wrap": true,
-              "size": "large"
-            },
-            {
-              "type": "TextBlock",
               "text": "But don't worry, be happy, there's still time...",
               "wrap": true,
               "size": "medium"
@@ -102,22 +84,10 @@
           "body": [
             {
               "type": "TextBlock",
-              "text": "**Allison Brown said that you didn't meet.**",
-              "wrap": true,
-              "size": "large"
-            },
-            {
-              "type": "TextBlock",
               "text": "That's too bad you didn't meet, but I'll have more pairings for you soon.",
               "wrap": true,
               "size": "medium"
-            },          
-            {
-              "type": "TextBlock",
-              "text": "_💡 PS: Are you out of office? If so, snooze your pairings till you’re back by opening up a DM with me and saying “help.”_",
-              "wrap": true,
-              "size": "medium"
-            }          
+            }         
           ]
         }
       }           
