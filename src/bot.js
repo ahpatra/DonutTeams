@@ -108,7 +108,7 @@ module.exports.setup = function (app) {
     function insertOrAdd(member, list, i){
         var newArr = [];
         for (var x = 0; x < list.length; x++){
-            newArr.push(list[x].name);
+            newArr.push(list[x]);
         }
         newArr.splice(i, 1);
         PAIRINGS[member.name] = newArr;
@@ -173,6 +173,15 @@ module.exports.setup = function (app) {
 
     bot.dialog('sendGreeting', function(session){
         var card = require("./views/greetingCard.json");
+        var pairingName;
+        var pairingEmail;
+        for (i = 0; i < PAIRINGS[CHAT_MEMBER.name].length; i++) {
+            pairingName += PAIRINGS[CHAT_MEMBER.name][i].name + " "
+            pairingEmail += PAIRINGS[CHAT_MEMBER.name][i].email + ","
+        }
+        var titleText = "Chat with" +  CHAT_MEMBER.name + pairingName
+        card.actions[0].title = titleText;
+        card.actions[0].url = "https://teams.microsoft.com/l/chat/0/0?users="+ pairingEmail+"&topicName=Get%20Coffee!&message=Lets%20meet!";
         var botmessage = new builder.Message(session)
             .address(session.message.address)
             .addAttachment({

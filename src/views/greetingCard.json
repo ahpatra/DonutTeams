@@ -19,11 +19,6 @@
         "items": [
           {
             "type": "TextBlock",
-            "text": "👋 Allison Brown, Franziska Fiegler \r\r 🌞 Hello! 🌞",
-            "wrap": true
-          },
-          {
-            "type": "TextBlock",
             "text": "I'm your friendly 🍩🤖, here to help you get to know your teammates better by pairing everyone enrolled in Donuteers every 2 weeks.",
             "wrap": true
           },
@@ -42,12 +37,7 @@
             "type": "TextBlock",
             "text": "\n\n - **In-N-Out Burger** at 333 Jefferson St. 🍔 \r- **Cliff House** at 1090 Point Lobos 🍤 \r- **International Smoke** at 301 Mission Street 🌍",
             "wrap": true
-          },               
-          {
-            "type": "TextBlock",
-            "text": "_Will you be out of office? Just open up a DM with me and say “help” to snooze pairings. Want to stop participating in pairings? Just leave Donuteers._",
-            "wrap": true
-          }                
+          }               
         ]
       }
       
