@@ -188,6 +188,19 @@ module.exports.setup = function (app) {
             });
             
         bot.send(botmessage, function (err) { });
+        session.beginDialog('sendReminderCard');
+    });
+
+    bot.dialog('sendReminderCard', function(session){
+        var card = require("./views/reminderCard.json");
+        var botmessage = new builder.Message(session)
+            .address(session.message.address)
+            .addAttachment({
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": card
+            });
+            
+        bot.send(botmessage, function (err) { });
     });
 
     function createGroupChats(session, chatMembers) {

@@ -1,0 +1,125 @@
+{
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
+    "version": "1.0",
+    "body": [
+      {
+        "type": "Container",
+        "items": [
+          {
+            "type": "TextBlock",
+            "text": "Follow-up",
+            "weight": "bolder",
+            "size": "large"
+          }
+        ]
+      },
+      {
+        "type": "Container",
+        "items": [
+          {
+            "type": "TextBlock",
+            "text": "Me again, your friendly neighborhood 🍩🤖",
+            "wrap": true
+          },
+          {
+            "type": "TextBlock",
+            "text": "Have you had a chance to meet yet?",
+            "wrap": true
+          }
+        ]
+      }    
+    ],
+    "actions": [
+      {
+        "type": "Action.ShowCard",
+        "title": "Yes!",
+        "card": {
+          "type": "AdaptiveCard",
+          "body": [
+            {
+              "type": "TextBlock",
+              "text": "**Allison Brown said that you met.**",
+              "wrap": true,
+              "size": "large"
+            },
+            {
+              "type": "TextBlock",
+              "text": "That's great that you met! 🎉🍩🎉 I literally cannot wait to group you with new team members soon!",
+              "wrap": true,
+              "size": "medium"
+            }          
+          ]
+        }
+      },
+      {
+        "type": "Action.ShowCard",
+        "title": "It's scheduled",
+        "card": {
+          "type": "AdaptiveCard",
+          "body": [
+            {
+              "type": "TextBlock",
+              "text": "**Franziska Fiegler said that your meeting is scheduled.**",
+              "wrap": true,
+              "size": "large"
+            },
+            {
+              "type": "TextBlock",
+              "text": "That's great that you're going to meet! ⌛🍩⏳ I literally cannot wait to group you with new team members soon!",
+              "wrap": true,
+              "size": "medium"
+            }          
+          ]
+        }
+      },     
+      {
+        "type": "Action.ShowCard",
+        "title": "No (at 1 week)",
+        "card": {
+          "type": "AdaptiveCard",
+          "body": [
+            {
+              "type": "TextBlock",
+              "text": "**Allison Brown said that you didn't meet.**",
+              "wrap": true,
+              "size": "large"
+            },
+            {
+              "type": "TextBlock",
+              "text": "But don't worry, be happy, there's still time...",
+              "wrap": true,
+              "size": "medium"
+            }          
+          ]
+        }
+      },  
+      {
+        "type": "Action.ShowCard",
+        "title": "No (at 2 weeks)",
+        "card": {
+          "type": "AdaptiveCard",
+          "body": [
+            {
+              "type": "TextBlock",
+              "text": "**Allison Brown said that you didn't meet.**",
+              "wrap": true,
+              "size": "large"
+            },
+            {
+              "type": "TextBlock",
+              "text": "That's too bad you didn't meet, but I'll have more pairings for you soon.",
+              "wrap": true,
+              "size": "medium"
+            },          
+            {
+              "type": "TextBlock",
+              "text": "_💡 PS: Are you out of office? If so, snooze your pairings till you’re back by opening up a DM with me and saying “help.”_",
+              "wrap": true,
+              "size": "medium"
+            }          
+          ]
+        }
+      }           
+    ]
+  }
